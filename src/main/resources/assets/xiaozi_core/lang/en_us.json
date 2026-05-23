@@ -1,0 +1,6 @@
+{
+  "crashguard.warning.healthy": "§aSystem running normally",
+  "crashguard.warning.warning": "§eHigh memory usage, consider saving",
+  "crashguard.warning.critical": "§6Critical memory pressure, save and exit now!",
+  "crashguard.warning.emergency": "§cSystem about to crash, emergency protocol..."
+}

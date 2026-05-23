@@ -1,0 +1,17 @@
+// 全局 Gradle 镜像配置
+allprojects {
+    repositories {
+        mavenLocal()
+        maven { url 'https://maven.aliyun.com/repository/public' }
+        maven { url 'https://maven.aliyun.com/repository/central' }
+        maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
+        maven { url 'https://maven.aliyun.com/repository/fabric' }
+        maven { url 'https://maven.aliyun.com/repository/sponge' }
+        mavenCentral()
+    }
+}
+
+// 使用阿里云 Gradle 发行版
+gradle.wrapper {
+    distributionUrl = "https://mirrors.aliyun.com/maven/gradle/gradle-9.4.1-bin.zip"
+}

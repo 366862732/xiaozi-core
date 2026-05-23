@@ -1,0 +1,70 @@
+package com.example.crashguard.crash;
+
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.ModContainer;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.option.Options;
+
+import java.lang.management.*;
+import java.time.Instant;
+import java.util.*;
+import java.util.stream.Collectors;
+
+public class DiagnosticCollector {
+    
+    public static DiagnosticData collectAll(Thread crashedThread, Throwable throwable) {
+        DiagnosticData data = new DiagnosticData();
+        
+        data.crashId = UUID.randomUUID().toString();
+        data.crashTime = Instant.now();
+        data.crashThread = crashedThread.getName();
+        data.crashThreadId = crashedThread.getId();
+        data.exceptionClass = throwable.getClass().getName();
+        data.exceptionMessage = throwable.getMessage();
+        
+        for (StackTraceElement e : throwable.getStackTrace()) {
+            data.stackTrace.add(e.toString());
+        }
+        
+        collectMemoryInfo(data);
+        collectHardwareInfo(data);
+        collectModList(data);
+        collectGameConfig(data);
+        
+        return data;
+    }
+    
+    private static void collectMemoryInfo(DiagnosticData data) {
+        Runtime rt = Runtime.getRuntime();
+        data.memoryInfo.maxMemory = rt.maxMemory();
+        data.memoryInfo.totalMemory = rt.totalMemory();
+        data.memoryInfo.freeMemory = rt.freeMemory();
+        data.memoryInfo.usedMemory = rt.totalMemory() - rt.freeMemory();
+        data.memoryInfo.usagePercent = (int)(data.memoryInfo.usedMemory * 100 / data.memoryInfo.maxMemory);
+    }
+    
+    private static void collectHardwareInfo(DiagnosticData data) {
+        OperatingSystemMXBean os = ManagementFactory.getOperatingSystemMXBean();
+        data.hardwareInfo.cpuCores = os.getAvailableProcessors();
+        data.hardwareInfo.osName = os.getName();
+        data.hardwareInfo.osArch = os.getArch();
+        data.hardwareInfo.osVersion = os.getVersion();
+        data.hardwareInfo.systemLoadAverage = os.getSystemLoadAverage();
+    }
+    
+    private static void collectModList(DiagnosticData data) {
+        FabricLoader loader = FabricLoader.getInstance();
+        for (ModContainer container : loader.getAllMods()) {
+            var meta = container.getMetadata();
+            Map<String, String> mod = new HashMap<>();
+            mod.put("id", meta.getId());
+            mod.put("name", meta.getName());
+            mod.put("version", meta.getVersion().getFriendlyString());
+            data.modInfo.mods.add(mod);
+        }
+    }
+    
+    private static void collectGameConfig(DiagnosticData data) {
+        data.gameConfig.allocatedMemory = Runtime.getRuntime().maxMemory();
+    }
+}

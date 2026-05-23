@@ -1,0 +1,6 @@
+{
+  "crashguard.warning.healthy": "§a系统运行正常",
+  "crashguard.warning.warning": "§e内存使用偏高，建议准备保存",
+  "crashguard.warning.critical": "§6内存严重不足，请尽快保存退出！",
+  "crashguard.warning.emergency": "§c系统即将崩溃，正在紧急处理..."
+}
